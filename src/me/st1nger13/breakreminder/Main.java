@@ -25,5 +25,6 @@ public class Main {
                 .setWorkRegime(WorkRegime.STRICT)
                 .build() ;
         breakReminder.start() ;
+
     }
 }

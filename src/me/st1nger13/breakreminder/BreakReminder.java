@@ -19,6 +19,7 @@ public class BreakReminder {
     public void start() {
         isRunning = true ;
         Thread timerThread = new Thread(() -> {
+            //WindowReminder.start(breakDuration, workRegime) ;
             while(isRunning) {
                 if(System.currentTimeMillis() - lastUpdateTime > 1000) {
                     timer++ ;
@@ -26,7 +27,7 @@ public class BreakReminder {
                 }
 
                 if(timer > breakPeriod) {
-                    WindowReminder.start(breakDuration, workRegime) ;
+                    WindowReminder.start(breakDuration, "", workRegime) ;
 
                     if(timer > breakPeriod + breakDuration)
                         timer = 0 ;

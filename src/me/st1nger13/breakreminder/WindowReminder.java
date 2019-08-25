@@ -27,12 +27,27 @@ public class WindowReminder extends JFrame {
 
 
     public static void main(String[] args) {
-        new WindowReminder(20, WorkRegime.STRICT) ;
+        //new WindowReminder(10, WorkRegime.STRICT) ;
+
+        int breakDuration = 3;
+        String breakHint = "Break";
+        try {
+            if(args.length > 0)
+                breakDuration = Integer.parseInt(args[0].trim()) ;
+            if(args.length > 1)
+                breakHint = args[1].trim();
+        } catch(NumberFormatException e) {
+            Print.error("Incorrect time!") ;
+        }
+
+        WindowReminder.start(breakDuration, breakHint, WorkRegime.STRICT) ;
+
     }
 
-    public static void start(int timer, WorkRegime workRegime) {
+    public static void start(int timer, String hint, WorkRegime workRegime) {
         if(instance == null)
-            instance = new WindowReminder(timer, workRegime) ;
+            instance = new WindowReminder(timer, hint, workRegime) ;
+
     }
 
     public static void close() {
@@ -40,9 +55,13 @@ public class WindowReminder extends JFrame {
         instance = null ;
     }
 
-    public WindowReminder(int timer, WorkRegime workRegime) {
-        Print.lined("Break started for " + timer + " sec.") ;
+    public WindowReminder(int timer, String hint, WorkRegime workRegime) {
+        if(hint.equals("")){
+            hint = "Break";
+        }
 
+        Print.lined("Break started for " + timer + " sec.") ;
+        /*
         try {
             URL urlImage = this.getClass().getClassLoader().getResource("eye_ico.png") ;
             if(urlImage != null)
@@ -52,12 +71,14 @@ public class WindowReminder extends JFrame {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        */
         this.timer = timerMaxTime = timer ;
 
         if(workRegime == WorkRegime.STRICT) {
             Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize() ;
+            //this.setBounds(0, 0, screenSize.width, screenSize.height) ;
             this.setBounds(0, 0, screenSize.width-100, screenSize.height-100) ;
+
             this.addWindowFocusListener(new WindowFocusListener() {
                 @Override
                 public void windowGainedFocus(WindowEvent windowEvent) {}
@@ -82,21 +103,31 @@ public class WindowReminder extends JFrame {
         this.setLayout(new GridBagLayout()) ;
         this.setLocationRelativeTo(null) ;
 
+        //int panel_width = 400;
+        int panel_width = hint.length() * 75;
+        int panel_height = 150;
+
         breakPane = new JPanel() {
             public void paintComponent(Graphics g){
                 g.clearRect(0, 0, getWidth(), getHeight()) ;
                 super.paintComponent(g);
                 if(breakLoadingValue > 0 && breakLoadingValue <= 1) {
                     g.setColor(timerBgColor) ;
-                    g.fillRect(0, 0, 400, (int) (200 * breakLoadingValue)) ;
+                    g.fillRect(0, 0, panel_width, (int) (panel_height * breakLoadingValue)) ;
                 }
-
+                /*
                 if(image != null)
                     g.drawImage(image, 100, 47, null) ;
+                */
             }
         } ;
-        breakPane.setPreferredSize(new Dimension(400, 200)) ;
-        breakPane.setSize(400, 200);
+
+        //hint = hint.replaceAll(" ", "<br/>");
+        breakPane.add(new JLabel("<html><span style='font-size:90px;color:white;'>" + hint + "</span></html>"));
+
+
+        breakPane.setPreferredSize(new Dimension(panel_width, panel_height)) ;
+        breakPane.setSize(panel_width, panel_height);
         breakPane.setBackground(new Color(24f/255f, 24f/255f, 24f/255f, 1f)) ;
 
         this.add(breakPane) ;
